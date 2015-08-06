@@ -25,7 +25,7 @@ var Selfie = db.table('Selfie');
 exports.handler = function(event, context) {    
     Q.fcall(function() {
         // Retrieve all the selfies from the database
-        return Selfie.find({active: 1}).sort(1).exec();
+        return Selfie.find({active: 1}, 'ActiveDateIndex').sort(1).exec();
     }).then(function(result) {
         // Send the result back to the client
         context.succeed(result);
