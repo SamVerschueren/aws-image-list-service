@@ -8,7 +8,8 @@
  */
 
 // module dependencies
-var db = require('dynongo');
+var db = require('dynongo'),
+    Q = require('q');
 
 // connect with the database
 db.connect();
