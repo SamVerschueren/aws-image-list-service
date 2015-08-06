@@ -23,9 +23,13 @@ var Selfie = db.table('Selfie');
  * @param {object}  context     The AWS Lambda execution context.
  */
 exports.handler = function(event, context) {
+    var query = new db.methods.Query('Selfie', db._dynamodb);
+    
+    console.log(query);
+    
     Q.fcall(function() {
         // Retrieve all the selfies from the database
-        return Selfie.find().exec();
+        return query.exec();
     }).then(function(result) {
         // Send the result back to the client
         context.succeed(result);
