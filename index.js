@@ -25,7 +25,7 @@ var Selfie = db.table('Selfie');
 exports.handler = function(event, context) {
     Q.fcall(function() {
         // Retrieve all the selfies from the database
-        return Selfie.scan().exec();
+        return Selfie.find().exec();
     }).then(function(result) {
         // Send the result back to the client
         context.succeed(result);
