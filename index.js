@@ -53,10 +53,10 @@ exports.handler = function(event, context) {
         
         var promises = [];
         
-        for(var i=0; i<4; i++) {
-            var hour = date.hour() - i;
+        for(var i=0; i<1; i++) {
+            promises = promises.concat(fetchForHour(date.format('YYYY-MM-DD') + '_' + date.hour()));
             
-            promises = promises.concat(fetchForHour(date.format('YYYY-MM-DD') + '_' + hour));
+            date.subtract(1, 'hour');
         }
         
         return Q.all(promises);
