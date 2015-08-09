@@ -28,10 +28,15 @@ exports.handler = function(event, context) {
     console.log(event);
     
     Q.fcall(function() {
-        var today = moment().format('YYYY-MM-DD');
+        var since;
+        
+        if(event.since) {
+            // If the since query parameter is provided, set it
+            since = moment(event.since);
+        }
         
         // Retrieve all the selfies from the database
-        return Selfie.find({day: today}, 'DayDateIndex').select('name email description image').sort(1).exec();
+        return fetch(since);
     }).then(function(result) {
         // Send the result back to the client
         context.succeed(result);
@@ -42,4 +47,32 @@ exports.handler = function(event, context) {
         // Something went wrong
         context.fail(err);
     });
+    
+    function fetch(date) {
+        date = date || moment();
+        
+        var promises = [];
+        
+        for(var i=0; i<4; i++) {
+            var hour = date.hour() - i;
+            
+            promises = promises.concat(fetchForHour(date.format('YYYY-MM-DD') + '_' + hour));
+        }
+        
+        return Q.all(promises);
+    };
+    
+    function fetchForHour(hour) {
+        var result = [];
+        
+        for(var i=1; i<=200; i++) {
+            console.log({subid: hour + '_' + i});
+            
+            // Iterate over all the possible values
+            result.push(Selfie.find({subid: hour + '_' + i}, 'SubDateIndex').select('name email description image').exec());
+        }
+        
+        // Return the list of promises
+        return result;
+    }
 };
