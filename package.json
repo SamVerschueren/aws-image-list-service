@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "dynongo": "0.0.13",
+    "moment": "^2.10.6",
     "q": "^1.4.1"
   }
 }
