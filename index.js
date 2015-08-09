@@ -54,7 +54,7 @@ exports.handler = function(event, context) {
         var promises = [];
         
         for(var i=0; i<1; i++) {
-            promises = promises.concat(fetchForHour(date.format('YYYY-MM-DD') + '_' + date.hour()));
+            promises = promises.concat(fetchForHour(date.format('YYYY-MM-DD') + '_' + date.format('HH')));
             
             date.subtract(1, 'hour');
         }
@@ -65,7 +65,7 @@ exports.handler = function(event, context) {
     function fetchForHour(hour) {
         var result = [];
         
-        for(var i=1; i<=200; i++) {
+        for(var i=1; i<=20; i++) {
             console.log({subid: hour + '_' + i});
             
             // Iterate over all the possible values
