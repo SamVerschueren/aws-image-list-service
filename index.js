@@ -33,7 +33,7 @@ exports.handler = function(event, context) {
     Q.fcall(function() {
         var since;
         
-        if(event.since) {
+        if(event.since && event.since.length > 0) {
             // If the since query parameter is provided, set it
             since = moment(event.since);
         }
@@ -61,8 +61,6 @@ exports.handler = function(event, context) {
         date = date || moment();
         
         var promises = [];
-        
-        console.log(date.format('YYYY-MM-DD'));
         
         for(var i=1; i<=50; i++) {
             promises.push(Selfie.find({subid: date.format('YYYY-MM-DD') + '_' + i}, 'SubDateIndex').select('name email date description image').exec());
