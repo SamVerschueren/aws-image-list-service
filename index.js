@@ -65,7 +65,7 @@ exports.handler = function(event, context) {
         console.log(date.format('YYYY-MM-DD'));
         
         for(var i=1; i<=50; i++) {
-            promises.push(Selfie.find({subid: date.format('YYYY-MM-DD') + '_' + i}, 'SubDateIndex').select('name email description image').exec());
+            promises.push(Selfie.find({subid: date.format('YYYY-MM-DD') + '_' + i}, 'SubDateIndex').select('name email date description image').exec());
         }
         
         return Q.all(promises)
@@ -73,8 +73,6 @@ exports.handler = function(event, context) {
                 return _.flatten(data);
             })
             .then(function(result) {
-                console.log(result);
-                
                 if(result.length < 50 && date.diff(MIN_DATE, 'days') > 0) {
                     date.subtract(1, 'day');
                     
