@@ -10,7 +10,8 @@
 // module dependencies
 var db = require('dynongo'),
     moment = require('moment'),
-    Q = require('q');
+    Q = require('q'),
+    _ = require('lodash');
 
 // connect with the database
 db.connect();
@@ -39,7 +40,7 @@ exports.handler = function(event, context) {
         return fetch(since);
     }).then(function(result) {
         // Send the result back to the client
-        context.succeed(result);
+        context.succeed(_.flatten(result));
     }).catch(function(err) {
         // Print the error if something went wrong
         console.error(err, err.stack);
@@ -54,7 +55,7 @@ exports.handler = function(event, context) {
         var promises = [];
         
         for(var i=0; i<1; i++) {
-            promises = promises.concat(fetchForHour(date.format('YYYY-MM-DD') + '_' + date.format('HH')));
+            fetchForHour(promises, date.format('YYYY-MM-DD') + '_' + date.format('HH'));
             
             date.subtract(1, 'hour');
         }
@@ -62,17 +63,10 @@ exports.handler = function(event, context) {
         return Q.all(promises);
     };
     
-    function fetchForHour(hour) {
-        var result = [];
-        
+    function fetchForHour(result, hour) {
         for(var i=1; i<=20; i++) {
-            console.log({subid: hour + '_' + i});
-            
             // Iterate over all the possible values
             result.push(Selfie.find({subid: hour + '_' + i}, 'SubDateIndex').select('name email description image').exec());
         }
-        
-        // Return the list of promises
-        return result;
     }
 };

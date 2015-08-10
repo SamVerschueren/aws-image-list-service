@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "dynongo": "0.0.13",
+    "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "q": "^1.4.1"
   }
