@@ -18,6 +18,8 @@ db.connect();
 
 var Selfie = db.table('Selfie');
  
+var MIN_DATE = moment('2015-08-09');
+
 /**
  * Main entrypoint of the service.
  * 
@@ -52,21 +54,37 @@ exports.handler = function(event, context) {
     function fetch(date) {
         date = date || moment();
         
-        var promises = [];
-        
-        for(var i=0; i<1; i++) {
-            fetchForHour(promises, date.format('YYYY-MM-DD') + '_' + date.format('HH'));
-            
-            date.subtract(1, 'hour');
-        }
-        
-        return Q.all(promises);
+        return fetchHelper(date);
     };
     
-    function fetchForHour(result, hour) {
-        for(var i=1; i<=20; i++) {
-            // Iterate over all the possible values
-            result.push(Selfie.find({subid: hour + '_' + i}, 'SubDateIndex').select('name email description image').exec());
+    function fetchHelper(date) {
+        date = date || moment();
+        
+        var promises = [];
+        
+        console.log(date.format('YYYY-MM-DD'));
+        
+        for(var i=1; i<=50; i++) {
+            promises.push(Selfie.find({subid: date.format('YYYY-MM-DD') + '_' + i}, 'SubDateIndex').select('name email description image').exec());
         }
+        
+        return Q.all(promises)
+            .then(function(data) {
+                return _.flatten(data);
+            })
+            .then(function(result) {
+                console.log(result);
+                
+                if(result.length < 50 && date.diff(MIN_DATE, 'days') > 0) {
+                    date.subtract(1, 'day');
+                    
+                    return fetchHelper(date)
+                        .then(function(data) {
+                            return result.concat(data);
+                        });
+                }
+                
+                return result;
+            });
     }
 };
