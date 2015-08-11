@@ -18,7 +18,8 @@ db.connect();
 
 var Selfie = db.table('Selfie');
  
-var MIN_DATE = moment('2015-08-11');
+var MIN_DATE = moment('2015-08-11'),
+    ITEMS_PER_PAGE = 100;
 
 /**
  * Main entrypoint of the service.
@@ -57,24 +58,17 @@ exports.handler = function(event, context) {
         return fetchHelper(date);
     };
     
-    function fetchHelper(date) {
+    function fetchHelper(date, numberOfItems) {
         date = date || moment();
         
-        var promises = [];
-        
-        for(var i=1; i<=20; i++) {
-            promises.push(Selfie.find({id: date.format('YYYY-MM-DD') + '_' + i}).select('name email date description image').exec());
-        }
-        
-        return Q.all(promises)
-            .then(function(data) {
-                return _.flatten(data);
+        return Q.fcall(function() {
+                return Selfie.find({id: date.format('YYYY-MM-DD')}).select('name email date description image').sort(-1).limit(numberOfItems || ITEMS_PER_PAGE).exec()
             })
             .then(function(result) {
-                if(result.length < 50 && date.diff(MIN_DATE, 'days') > 0) {
+                if(result.length < ITEMS_PER_PAGE && date.diff(MIN_DATE, 'days') > 0) {
                     date.subtract(1, 'day');
                     
-                    return fetchHelper(date)
+                    return fetchHelper(date, ITEMS_PER_PAGE-result.length)
                         .then(function(data) {
                             return result.concat(data);
                         });
