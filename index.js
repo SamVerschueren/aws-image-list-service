@@ -63,7 +63,7 @@ exports.handler = function(event, context) {
                 var query;
             
                 if(date) {
-                    query = Selfie.find({id: date.format('YYYY-MM-DD')}).where({date: {$gt: date.format()}});
+                    query = Selfie.find({id: date.format('YYYY-MM-DD'), date: {$gt: date.format()}});
                 }
                 else {
                     query = Selfie.find({id: moment().format('YYYY-MM-DD')});
