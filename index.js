@@ -53,29 +53,29 @@ exports.handler = function(event, context) {
     });
     
     function fetch(date) {
-        date = date || moment();
-        
         return fetchHelper(date);
     };
     
     function fetchHelper(date, numberOfItems) {
+        var start = date || moment();
+        
         return Q.fcall(function() {
                 var query;
             
                 if(date) {
-                    query = Selfie.find({id: date.format('YYYY-MM-DD'), date: {$gt: date.format()}});
+                    query = Selfie.find({id: start.format('YYYY-MM-DD'), date: {$gt: date.format()}}, 'DateIndex');
                 }
                 else {
-                    query = Selfie.find({id: moment().format('YYYY-MM-DD')});
+                    query = Selfie.find({id: start.format('YYYY-MM-DD')});
                 }
             
                 return query.select('name email date description image').sort(-1).limit(numberOfItems || ITEMS_PER_PAGE).exec()
             })
             .then(function(result) {
-                if(result.length < ITEMS_PER_PAGE && date.diff(MIN_DATE, 'days') > 0) {
-                    date.subtract(1, 'day');
+                if(result.length < ITEMS_PER_PAGE && start.diff(MIN_DATE, 'days') > 0) {
+                    start.subtract(1, 'day');
                     
-                    return fetchHelper(date, ITEMS_PER_PAGE-result.length)
+                    return fetchHelper(start, ITEMS_PER_PAGE-result.length)
                         .then(function(data) {
                             return result.concat(data);
                         });
