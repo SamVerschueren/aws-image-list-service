@@ -59,10 +59,17 @@ exports.handler = function(event, context) {
     };
     
     function fetchHelper(date, numberOfItems) {
-        date = date || moment();
-        
         return Q.fcall(function() {
-                return Selfie.find({id: date.format('YYYY-MM-DD')}).select('name email date description image').sort(-1).limit(numberOfItems || ITEMS_PER_PAGE).exec()
+                var query;
+            
+                if(date) {
+                    query = Selfie.find({id: date.format('YYYY-MM-DD')}).where({date: {$gt: date.format()}});
+                }
+                else {
+                    query = Selfie.find({id: moment().format('YYYY-MM-DD')});
+                }
+            
+                return query.select('name email date description image').sort(-1).limit(numberOfItems || ITEMS_PER_PAGE).exec()
             })
             .then(function(result) {
                 if(result.length < ITEMS_PER_PAGE && date.diff(MIN_DATE, 'days') > 0) {
