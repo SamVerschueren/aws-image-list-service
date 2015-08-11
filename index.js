@@ -19,7 +19,7 @@ db.connect();
 var Selfie = db.table('Selfie');
  
 var MIN_DATE = moment('2015-08-11'),
-    ITEMS_PER_PAGE = 100;
+    ITEMS_PER_PAGE = 10;
 
 /**
  * Main entrypoint of the service.
