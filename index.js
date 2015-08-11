@@ -18,7 +18,7 @@ db.connect();
 
 var Selfie = db.table('Selfie');
  
-var MIN_DATE = moment('2015-08-09');
+var MIN_DATE = moment('2015-08-11');
 
 /**
  * Main entrypoint of the service.
@@ -62,8 +62,8 @@ exports.handler = function(event, context) {
         
         var promises = [];
         
-        for(var i=1; i<=50; i++) {
-            promises.push(Selfie.find({subid: date.format('YYYY-MM-DD') + '_' + i}, 'SubDateIndex').select('name email date description image').exec());
+        for(var i=1; i<=20; i++) {
+            promises.push(Selfie.find({id: date.format('YYYY-MM-DD') + '_' + i}).select('name email date description image').exec());
         }
         
         return Q.all(promises)
