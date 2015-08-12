@@ -31,9 +31,9 @@ exports.handler = function(event, context) {
     // Log the event for debugging purposes
     console.log(event);
     
+    var since;
+    
     Q.fcall(function() {
-        var since;
-        
         if(event.since && event.since.length > 0) {
             // If the since query parameter is provided, set it
             since = moment(event.since);
@@ -62,8 +62,8 @@ exports.handler = function(event, context) {
         return Q.fcall(function() {
                 var query;
             
-                if(date) {
-                    query = Selfie.find({id: start.format('YYYY-MM-DD'), date: {$lt: date.format()}}, 'DateIndex');
+                if(since) {
+                    query = Selfie.find({id: start.format('YYYY-MM-DD'), date: {$lt: since.format()}}, 'DateIndex');
                 }
                 else {
                     query = Selfie.find({id: start.format('YYYY-MM-DD')});
