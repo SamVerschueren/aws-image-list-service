@@ -18,7 +18,7 @@ db.connect();
 
 var Selfie = db.table('Selfie');
  
-var MIN_DATE = moment('2015-08-11'),
+var MIN_DATE = moment('2015-08-11').startOf('day'),
     ITEMS_PER_PAGE = 50;
 
 /**
@@ -57,7 +57,7 @@ exports.handler = function(event, context) {
     };
     
     function fetchHelper(date, numberOfItems) {
-        var start = date || moment();
+        var start = (date || moment()).startOf('day');
         
         return Q.fcall(function() {
                 var query;
@@ -72,8 +72,12 @@ exports.handler = function(event, context) {
                 return query.select('name email date description image').sort(-1).limit(numberOfItems || ITEMS_PER_PAGE).exec()
             })
             .then(function(result) {
+                console.log(result);
+                
                 if(result.length < ITEMS_PER_PAGE && start.diff(MIN_DATE, 'days') > 0) {
                     start.subtract(1, 'day');
+                    
+                    console.log('fetch for ' + start.format());
                     
                     return fetchHelper(start, ITEMS_PER_PAGE-result.length)
                         .then(function(data) {
