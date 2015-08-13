@@ -18,7 +18,7 @@ db.connect();
 
 var Selfie = db.table('Selfie');
  
-var MIN_DATE = moment('2015-08-11').startOf('day'),
+var MIN_DATE = moment('2015-08-14').startOf('day'),
     ITEMS_PER_PAGE = 50;
 
 /**
