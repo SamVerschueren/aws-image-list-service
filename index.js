@@ -79,7 +79,7 @@ exports.handler = function(event, context) {
                     since = moment(result[result.length-1].date);
                 }
                 
-                if(result.length < ITEMS_PER_PAGE && start.diff(MIN_DATE, 'days') > 0) {
+                if(result.length < ITEMS_PER_PAGE && start.diff(MIN_DATE, 'days') >= 0) {
                     return fetchHelper(start, ITEMS_PER_PAGE-result.length)
                         .then(function(data) {
                             return result.concat(data);
