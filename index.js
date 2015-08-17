@@ -63,8 +63,6 @@ exports.handler = function(event, context) {
                 var query;
             
                 if(since) {
-                    console.log({id: start.format('YYYY-MM-DD'), date: {$lt: since.format()}});
-                    
                     query = Selfie.find({id: start.format('YYYY-MM-DD'), date: {$lt: since.format()}}, 'DateIndex');
                 }
                 else {
@@ -74,11 +72,14 @@ exports.handler = function(event, context) {
                 return query.select('name email date description image').sort(-1).limit(numberOfItems || ITEMS_PER_PAGE).exec()
             })
             .then(function(result) {
-                console.log(result);
+                if(result.length === 0) {
+                    start.subtract(1, 'day');
+                }
+                else {
+                    since = moment(result[result.length-1].date);
+                }
                 
                 if(result.length < ITEMS_PER_PAGE && start.diff(MIN_DATE, 'days') > 0) {
-                    start.subtract(1, 'day');
-                    
                     return fetchHelper(start, ITEMS_PER_PAGE-result.length)
                         .then(function(data) {
                             return result.concat(data);
