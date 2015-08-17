@@ -57,7 +57,7 @@ exports.handler = function(event, context) {
     };
     
     function fetchHelper(date, numberOfItems) {
-        var start = (date || moment()).startOf('day');
+        var start = (moment(date) || moment()).startOf('day');
         
         return Q.fcall(function() {
                 var query;
